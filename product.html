@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FK Jersey Oficial - Katalog Produk</title>
+    <link rel="stylesheet" href="product-page.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="logo-container">
+            <a href="index.html" class="logo">
+                <img src="image/fkjersey.png" alt="FK Jersey Oficial Logo" class="logo-img">
+            </a>
+        </div>
+        <nav class="navbar">
+            <a href="index.html">HOME</a>
+            <a href="product.html" class="active">PRODUCT</a>
+            <a href="gallery.html">STYLE</a>
+        </nav>
+        <div class="icons-container">
+            <!-- Tombol Keranjang -->
+            <div id="cart-btn" class="fas fa-shopping-cart">
+                <span id="cart-count" class="cart-count">0</span>
+            </div>
+            <div id="menu-btn" class="fas fa-bars"></div>
+        </div>
+    </header>
+
+    <!-- Sidebar Keranjang -->
+    <div id="cart-sidebar" class="cart-sidebar">
+        <span class="close-btn fas fa-times" id="close-cart-btn"></span>
+        <h3>Keranjang Belanja Anda</h3>
+        <div class="cart-items-container">
+            <!-- Item keranjang akan dirender di sini oleh JavaScript -->
+            <p id="empty-cart-message">Keranjang kosong. Mulai belanja!</p>
+        </div>
+        <div id="cart-summary" class="cart-summary" style="display: none;">
+            <div class="summary-line">
+                <span>Total Item:</span>
+                <span id="summary-total-qty">0</span>
+            </div>
+            <div class="summary-line total-price-line">
+                <span>Total Harga:</span>
+                <span id="summary-total-price">Rp 0,-</span>
+            </div>
+        </div>
+        <button class="btn checkout-btn" id="open-checkout-modal-btn" disabled>
+            <i class="fab fa-whatsapp"></i> Lanjut ke Checkout
+        </button>
+    </div>
+
+    <!-- Modal Detail Item (Pop-up 1) -->
+    <div id="product-detail-modal" class="modal">
+        <div class="modal-content modal-detail-content">
+            <span class="close-btn fas fa-times" id="close-detail-modal-btn"></span>
+            <h3 id="modal-product-name">Detail Pesanan</h3>
+
+            <form id="add-to-cart-form">
+                <!-- Info Produk -->
+                <div class="modal-product-info">
+                    <img id="modal-product-image" src="https://placehold.co/100x100/34495e/ecf0f1?text=Jersey"
+                        alt="Product Image">
+                    <div>
+                        <p>Harga Satuan: <span id="modal-product-price">Rp 0,-</span></p>
+                    </div>
+                </div>
+
+                <!-- Input Ukuran -->
+                <label for="size">Pilih Ukuran:</label>
+                <select id="size" required>
+                    <option value="" disabled selected>Pilih Ukuran</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                    <option value="XXL">XXL</option>
+                </select>
+
+                <!-- Input Jumlah -->
+                <label for="quantity">Jumlah Baju:</label>
+                <input type="number" id="quantity" value="1" min="1" required>
+
+                <p class="modal-total-price">Subtotal: <span id="modal-subtotal-price">Rp 0,-</span></p>
+
+                <button type="submit" class="btn">
+                    <i class="fas fa-cart-plus"></i> Tambahkan ke Keranjang
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Checkout (Pop-up 2) -->
+    <div id="checkout-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn fas fa-times" id="close-checkout-modal-btn"></span>
+            <h3>Formulir Konfirmasi Pesanan</h3>
+            <p>Mohon lengkapi data untuk memproses pesanan Anda:</p>
+
+            <form id="checkout-form">
+                <label for="nama">Nama Lengkap:</label>
+                <input type="text" id="nama" required>
+
+                <label for="alamat">Alamat Lengkap:</label>
+                <textarea id="alamat" required></textarea>
+
+                <label for="telepon">Nomor WhatsApp (Aktif):</label>
+                <input type="tel" id="telepon" placeholder="Contoh: 6281234567890" required>
+
+                <label for="payment-method">Metode Pembayaran:</label>
+                <select id="payment-method" required>
+                    <option value="" disabled selected>Pilih Metode Pembayaran</option>
+                    <option value="Transfer Bank">Transfer Bank (BCA, BRI, BNI, Mandiri)</option>
+                    <option value="QRIS">QRIS</option>
+                    <option value="COD">COD (Bayar di tempat)</option>
+                </select>
+                <div id="payment-info" class="payment-info" style="display:none;">
+                    <p id="payment-details"></p>
+                    <img id="qris-image" src="" alt="QRIS"
+                        style="display:none; width:180px; margin-top:10px; border-radius:10px;">
+                </div>
+
+
+
+                <p class="modal-total-price">Total Belanja: <span id="modal-final-price">Rp 0,-</span></p>
+
+                <button type="submit" class="btn whatsapp-final-btn">
+                    <i class="fab fa-whatsapp"></i> Kirim Pesanan ke Admin
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Area Notifikasi -->
+    <div id="notification-area" class="notification-area">
+        <!-- Notifikasi akan muncul di sini -->
+    </div>
+
+    <section class="product-list">
+        <h2 class="heading">KATALOG PRODUK</h2>
+        <div class="box-container">
+
+            <!-- Produk 1 -->
+            <div class="box" data-id="1" data-name="Jersey Home Player issue Real madrid 25/26" data-price="250000"
+                data-image="image/RMAH.png">
+                <img src="image/RMAH.png">
+                <h3>Jersey Home Player issue Real madrid 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="1">Tambahkan ke Keranjang</button>
+            </div>
+
+            <!-- 2 -->
+            <div class="box" data-id="2" data-name="Jersey Away Player issue Real madrid 25/26" data-price="250000"
+                data-image="image/RMAA.png">
+                <img src="image/RMAA.png">
+                <h3>Jersey Away Player issue Real madrid 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="2">Tambahkan ke Keranjang</button>
+            </div>
+
+            <!-- 3 -->
+            <div class="box" data-id="3" data-name="Jersey Third Player issue Real madrid 25/26" data-price="250000"
+                data-image="image/RMAT.png">
+                <img src="image/RMAT.png">
+                <h3>Jersey Third Player issue Real madrid 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="3">Tambahkan ke Keranjang</button>
+            </div>
+
+            <!-- 4 -->
+            <div class="box" data-id="4" data-name="Jersey Home Player issue Arsenal 25/26" data-price="230000"
+                data-image="image/ARSH.png">
+                <img src="image/ARSH.png">
+                <h3>Jersey Home Player issue Arsenal 25/26</h3>
+                <div class="price">Rp 230.000,-</div>
+                <button class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="4">Tambahkan ke Keranjang</button>
+            </div>
+
+            <!-- 5 -->
+            <div class="box" data-id="5" data-name="Jersey Away Player issue Arsenal 25/26" data-price="195000"
+                data-image="image/ARSA.png">
+                <img src="image/ARSA.png">
+                <h3>Jersey Away Player issue Arsenal 25/26</h3>
+                <div class="price">Rp 195.000,-</div>
+                <button class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="5">Tambahkan ke Keranjang</button>
+            </div>
+
+            <!-- 6 -->
+            <div class="box" data-id="6" data-name="Jersey Third Player issue Arsenal 25/26" data-price="250000"
+                data-image="image/ARST.png">
+                <img src="image/ARST.png">
+                <h3>Jersey Third Player issue Arsenal 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="6">Tambahkan ke Keranjang</button>
+            </div>
+
+            <div class="box" data-id="7" data-name="Jersey Home Player issue Liverpool 25/26" data-price="250000"
+                data-image="image/LFCH.png">
+                <img src="image/LFCH.png" alt="Jersey Liverpool Home">
+                <h3>Jersey Home Player issue Liverpool 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button type="button" class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="7">Tambahkan ke Keranjang</button>
+            </div>
+
+            <div class="box" data-id="8" data-name="Jersey Away Player issue Liverpool 25/26" data-price="250000"
+                data-image="image/LFCA.png">
+                <img src="image/LFCA.png" alt="Jersey Liverpool Away">
+                <h3>Jersey Away Player issue Liverpool 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button type="button" class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="8">Tambahkan ke Keranjang</button>
+            </div>
+
+            <div class="box" data-id="9" data-name="Jersey Third Player issue Liverpool 25/26" data-price="250000"
+                data-image="image/LFCT.png">
+                <img src="image/LFCT.png" alt="Jersey Liverpool Third">
+                <h3>Jersey Third Player issue Liverpool 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button type="button" class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="9">Tambahkan ke Keranjang</button>
+            </div>
+
+            <div class="box" data-id="10" data-name="Jersey Home Player issue Man City 25/26" data-price="250000"
+                data-image="image/MCIH.png">
+                <img src="image/MCIH.png" alt="Jersey Man City Home">
+                <h3>Jersey Home Player issue Man City 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button type="button" class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="10">Tambahkan ke Keranjang</button>
+            </div>
+
+            <div class="box" data-id="11" data-name="Jersey Away Player issue Man City 25/26" data-price="250000"
+                data-image="image/MCIA.png">
+                <img src="image/MCIA.png" alt="Jersey Man City Away">
+                <h3>Jersey Away Player issue Man City 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button type="button" class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="11">Tambahkan ke Keranjang</button>
+            </div>
+
+            <div class="box" data-id="12" data-name="Jersey Third Player issue Man City 25/26" data-price="250000"
+                data-image="image/MCIT.png">
+                <img src="image/MCIT.png" alt="Jersey Man City Third">
+                <h3>Jersey Third Player issue Man City 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button type="button" class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="12">Tambahkan ke Keranjang</button>
+            </div>
+
+            <div class="box" data-id="13" data-name="Jersey Home Player issue Man United 25/26" data-price="250000"
+                data-image="image/MUNH.png">
+                <img src="image/MUNH.png" alt="Jersey Man United Home">
+                <h3>Jersey Home Player issue Man United 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button type="button" class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="13">Tambahkan ke Keranjang</button>
+            </div>
+
+            <div class="box" data-id="14" data-name="Jersey Away Player issue Man United 25/26" data-price="250000"
+                data-image="image/MUNA.png">
+                <img src="image/MUNA.png" alt="Jersey A">
+                <h3>Jersey Away Player issue Man United 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <!-- Tombol baru untuk membuka modal detail item -->
+                <button type="button" class="btn buy-now-btn">
+                    Beli Sekarang
+                </button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="14">Tambahkan ke Keranjang</button>
+
+            </div>
+
+            <div class="box" data-id="15" data-name="Jersey Third Player issue Man United 25/26" data-price="250000"
+                data-image="image/MUNT.png">
+                <img src="image/MUNT.png" alt="Jersey A">
+                <h3>Jersey Third Player issue Man United 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <!-- Tombol baru untuk membuka modal detail item -->
+                <button type="button" class="btn buy-now-btn">
+                    Beli Sekarang
+                </button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="15">Tambahkan ke Keranjang</button>
+
+            </div>
+
+            <div class="box" data-id="16" data-name="Jersey Home Player issue Chealsea 25/26" data-price="250000"
+                data-image="image/CHEH.png">
+                <img src="image/CHEH.png" alt="Jersey A">
+                <h3>Jersey Home Player issue Chealsea 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <!-- Tombol baru untuk membuka modal detail item -->
+                <button type="button" class="btn buy-now-btn">
+                    Beli Sekarang
+                </button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="16">Tambahkan ke Keranjang</button>
+
+            </div>
+
+            <div class="box" data-id="17" data-name="Jersey Away Player issue Chealsea 25/26" data-price="250000"
+                data-image="image/CHEA.png">
+                <img src="image/CHEA.png" alt="Jersey A">
+                <h3>Jersey Away Player issue Chealsea 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <!-- Tombol baru untuk membuka modal detail item -->
+                <button type="button" class="btn buy-now-btn">
+                    Beli Sekarang
+                </button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="17">Tambahkan ke Keranjang</button>
+
+            </div>
+
+            <div class="box" data-id="18" data-name="Jersey Third Player issue Chealsea 25/26" data-price="250000"
+                data-image="image/CHET.png">
+                <img src="image/CHET.png" alt="Jersey A">
+                <h3>Jersey Third Player issue Chealsea 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <!-- Tombol baru untuk membuka modal detail item -->
+                <button type="button" class="btn buy-now-btn">
+                    Beli Sekarang
+                </button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="18">Tambahkan ke Keranjang</button>
+
+            </div>
+
+            <div class="box" data-id="19" data-name="Jersey Home Player issue Bayern Munich 25/26" data-price="250000"
+                data-image="image/BYRH.png">
+                <img src="image/BYRH.png" alt="Jersey A">
+                <h3>Jersey Home Player issue Bayern Munich 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <!-- Tombol baru untuk membuka modal detail item -->
+                <button type="button" class="btn buy-now-btn">
+                    Beli Sekarang
+                </button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="19">Tambahkan ke Keranjang</button>
+
+            </div>
+
+            <div class="box" data-id="20" data-name="Jersey Away Player issue Bayern Munich 25/26" data-price="250000"
+                data-image="image/BYRA.png">
+                <img src="image/BYRA.png" alt="Jersey A">
+                <h3>Jersey Away Player issue Bayern Munich 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <!-- Tombol baru untuk membuka modal detail item -->
+                <button type="button" class="btn buy-now-btn">
+                    Beli Sekarang
+                </button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="20">Tambahkan ke Keranjang</button>
+
+            </div>
+
+            <div class="box" data-id="21" data-name="Jersey Third Player issue Bayern Munich 25/26" data-price="250000"
+                data-image="image/BYRT.png">
+                <img src="image/BYRT.png" alt="Jersey A">
+                <h3>Jersey Third Player issue Bayern Munich 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <!-- Tombol baru untuk membuka modal detail item -->
+                <button type="button" class="btn buy-now-btn">
+                    Beli Sekarang
+                </button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="21">Tambahkan ke Keranjang</button>
+
+            </div>
+
+            <div class="box" data-id="22" data-name="Jersey Home Player issue Barcelona 25/26" data-price="250000"
+                data-image="image/FCBH.png">
+                <img src="image/FCBH.png" alt="Jersey A">
+                <h3>Jersey Home Player issue Barcelona 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <!-- Tombol baru untuk membuka modal detail item -->
+                <button type="button" class="btn buy-now-btn">
+                    Beli Sekarang
+                </button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="22">Tambahkan ke Keranjang</button>
+
+            </div>
+
+            <!-- Produk 16 : Barcelona Away -->
+            <div class="box" data-id="23" data-name="Jersey Away Player issue Barcelona 25/26" data-price="250000"
+                data-image="image/FCBA.png">
+                <img src="image/FCBA.png" alt="Jersey Barcelona Away">
+                <h3>Jersey Away Player issue Barcelona 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button type="button" class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="23">Tambahkan ke Keranjang</button>
+            </div>
+
+            <!-- Produk 17 : Barcelona Third -->
+            <div class="box" data-id="24" data-name="Jersey Third Player issue Barcelona 25/26" data-price="250000"
+                data-image="image/FCBT.png">
+                <img src="image/FCBT.png" alt="Jersey Barcelona Third">
+                <h3>Jersey Third Player issue Barcelona 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button type="button" class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="24">Tambahkan ke Keranjang</button>
+            </div>
+
+            <!-- Produk 18 : Persib Home -->
+            <div class="box" data-id="25" data-name="Jersey Home Player issue Persib 25/26" data-price="250000"
+                data-image="image/PSBH.png">
+                <img src="image/PSBH.png" alt="Jersey Persib Home">
+                <h3>Jersey Home Player issue Persib 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button type="button" class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="25">Tambahkan ke Keranjang</button>
+            </div>
+
+            <!-- Produk 19 : Persib Away -->
+            <div class="box" data-id="26" data-name="Jersey Away Player issue Persib 25/26" data-price="250000"
+                data-image="image/PSBA.png">
+                <img src="image/PSBA.png" alt="Jersey Persib Away">
+                <h3>Jersey Away Player issue Persib 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button type="button" class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="26">Tambahkan ke Keranjang</button>
+            </div>
+
+            <!-- Produk 20 : Persib Third -->
+            <div class="box" data-id="27" data-name="Jersey Third Player issue Persib 25/26" data-price="250000"
+                data-image="image/PSBT.png">
+                <img src="image/PSBT.png" alt="Jersey Persib Third">
+                <h3>Jersey Third Player issue Persib 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button type="button" class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="27">Tambahkan ke Keranjang</button>
+            </div>
+
+            <!-- Produk 21 : PSG Home -->
+            <div class="box" data-id="28" data-name="Jersey Home Player issue PSG 25/26" data-price="250000"
+                data-image="image/PSGH.png">
+                <img src="image/PSGH.png" alt="Jersey PSG Home">
+                <h3>Jersey Home Player issue PSG 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button type="button" class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="28">Tambahkan ke Keranjang</button>
+            </div>
+
+            <!-- Produk 22 : PSG Away -->
+            <div class="box" data-id="29" data-name="Jersey Away Player issue PSG 25/26" data-price="250000"
+                data-image="image/PSGA.png">
+                <img src="image/PSGA.png" alt="Jersey PSG Away">
+                <h3>Jersey Away Player issue PSG 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button type="button" class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="29">Tambahkan ke Keranjang</button>
+            </div>
+
+            <!-- Produk 23 : PSG Third -->
+            <div class="box" data-id="30" data-name="Jersey Third Player issue PSG 25/26" data-price="250000"
+                data-image="image/PSGT.png">
+                <img src="image/PSGT.png" alt="Jersey PSG Third">
+                <h3>Jersey Third Player issue PSG 25/26</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button type="button" class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="30">Tambahkan ke Keranjang</button>
+            </div>
+
+            <!-- Produk 24 : Timnas Indonesia -->
+            <div class="box" data-id="31" data-name="Jersey Home Player issue Timnas Indonesia" data-price="250000"
+                data-image="image/INDH.png">
+                <img src="image/INDH.png" alt="Jersey Timnas Indonesia">
+                <h3>Jersey Home Player issue Timnas Indonesia</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button type="button" class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="31">Tambahkan ke Keranjang</button>
+            </div>
+
+            <!-- Produk 25 : Timnas Belgia -->
+            <div class="box" data-id="32" data-name="Jersey Home Player issue Timnas Belgia" data-price="250000"
+                data-image="image/BLGA.png">
+                <img src="image/BLGA.png" alt="Jersey Belgia">
+                <h3>Jersey Home Player issue Timnas Belgia</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button type="button" class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="32">Tambahkan ke Keranjang</button>
+            </div>
+
+            <!-- Produk 26 : Timnas Spain -->
+            <div class="box" data-id="33" data-name="Jersey Home Player issue Timnas Spain" data-price="250000"
+                data-image="image/SPNA.png">
+                <img src="image/SPNA.png" alt="Jersey Spain">
+                <h3>Jersey Home Player issue Timnas Spain</h3>
+                <div class="price">Rp 250.000,-</div>
+                <button type="button" class="btn buy-now-btn">Beli Sekarang</button>
+                <button type="button" class="btn add-to-cart-btn" data-product-id="33">Tambahkan ke Keranjang</button>
+            </div>
+
+
+        </div>
+    </section>
+
+    <!-- Hapus bagian kontak dan footer agar tidak duplikasi jika di-load dari index.html/product.html -->
+    <section class="contact" id="contact">
+        <h2 class="heading">HUBUNGI KAMI</h2>
+        <div class="icons-container">
+            <div class="icons">
+                <i class="fas fa-phone"></i>
+                <h3>Telepon</h3>
+                <p>+62 895611492509</p>
+            </div>
+            <div class="icons">
+                <i class="fab fa-instagram"></i>
+                <h3>Instagram</h3>
+                <p>@fkjerseyoficial</p>
+            </div>
+            <div class="icons">
+                <i class="fas fa-envelope"></i>
+                <h3>Email</h3>
+                <p>fkjersey@gmail.com</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="credit">
+            &copy; 2025 FK Jersey Oficial. All rights reserved. | Dibuat oleh Aing
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
